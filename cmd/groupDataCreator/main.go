@@ -37,6 +37,7 @@ func main() {
 		groupMap[i] = groupMapHelper{Name: group.Name, ID: group.GUIDID}
 	}
 
+	var groupServantJoins []group.GroupServantJoin
 	for _, servant := range servants {
 		if servant.IsActivated == 0 {
 			continue
@@ -50,10 +51,19 @@ func main() {
 
 		var groupKey int
 		fmt.Scanln(&groupKey)
+
+		join := group.GroupServantJoin{ServantID: servant.GuidId, GrouptID: groupMap[groupKey].ID}
+
+		groupServantJoins = append(groupServantJoins, join)
 	}
 
-	//testList := [...]string{"name", "name2"}
+	jsonData, jsonEncodeErr := group.EncodeGroupServantJoin(groupServantJoins)
+	if jsonEncodeErr != nil {
+		fmt.Println("Error encoding join data")
+		os.Exit(-1)
+	}
 
+	ioutil.WriteFile(globalJsonPath+"additional\\groupJoins.json", jsonData, 0666)
 }
 
 /*for _, item := range testList {
