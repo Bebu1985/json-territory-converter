@@ -45,12 +45,13 @@ func main() {
 		if servant.IsActivated == 0 {
 			continue
 		}
-		fmt.Println(servant.Lastname + " " + servant.Prename + " zu Gruppe:")
+		fmt.Print(servant.Lastname + " " + servant.Prename + " zu Gruppe ")
 		for key, value := range groupMap {
 			keyString := strconv.Itoa(key)
 
-			fmt.Println(value.Name + "(" + keyString + ")")
+			fmt.Print(value.Name + "(" + keyString + ") ")
 		}
+		fmt.Print(": ")
 
 		var groupKey int
 		fmt.Scanln(&groupKey)
