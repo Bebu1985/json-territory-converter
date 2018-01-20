@@ -34,10 +34,13 @@ func main() {
 		fmt.Println("Error reading groups")
 		os.Exit(-1)
 	}
+
 	groupMap := make(map[int]groupMapHelper)
+	var orderHelper []int
 
 	for i, group := range groups {
 		groupMap[i] = groupMapHelper{Name: group.Name, ID: group.GUIDID}
+		orderHelper = append(orderHelper, i)
 	}
 
 	var groupServantJoins []models.GroupServantJoin
@@ -46,10 +49,10 @@ func main() {
 			continue
 		}
 		fmt.Print(servant.Lastname + " " + servant.Prename + " zu Gruppe ")
-		for key, value := range groupMap {
+		for key := range orderHelper {
 			keyString := strconv.Itoa(key)
 
-			fmt.Print(value.Name + "(" + keyString + ") ")
+			fmt.Print(groupMap[key].Name + "(" + keyString + ") ")
 		}
 		fmt.Print(": ")
 
