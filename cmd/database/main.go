@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/Bebu1985/jsonTerritoryConverter"
+	"github.com/Bebu1985/jsonTerritoryConverter/jsonConvert"
+	"github.com/Bebu1985/jsonTerritoryConverter/models"
 )
 
 func main() {
@@ -17,25 +19,21 @@ func main() {
 	}
 	defer db.Close()
 
-	servants, servErr := jsonTerritoryConverter.ReadServantDataFromJson(globalJsonPath + "servants.json")
-	if servErr != nil {
-		fmt.Println("Error reading servant json data")
-	}
+	var servants []models.Servant
+	servErr := jsonConvert.FileToObjects(globalJsonPath+"servants.json", &servants)
+	printError(servErr)
 
-	areas, areaErr := jsonTerritoryConverter.ReadAreaDataFromJson(globalJsonPath + "areas.json")
-	if areaErr != nil {
-		fmt.Println("Error reading area json data")
-	}
+	var areas []models.Area
+	areaErr := jsonConvert.FileToObjects(globalJsonPath+"areas.json", &areas)
+	printError(areaErr)
 
-	areaActions, areaActErr := jsonTerritoryConverter.ReadAreaActionDataFromJson(globalJsonPath + "areaactions.json")
-	if areaActErr != nil {
-		fmt.Println("Error reading areaAction json data")
-	}
+	var areaActions []models.AreaAction
+	areaActErr := jsonConvert.FileToObjects(globalJsonPath+"areaactions.json", &areaActions)
+	printError(areaActErr)
 
-	groups, groupErr := jsonTerritoryConverter.ReadGroupDataFromJson(globalJsonPath + "additional\\groups.json")
-	if groupErr != nil {
-		fmt.Println("Error reading group data")
-	}
+	var groups []models.Group
+	groupErr := jsonConvert.FileToObjects(globalJsonPath+"additional\\groups.json", &groups)
+	printError(groupErr)
 
 	for _, servant := range servants {
 		db.Create(&servant)
@@ -50,5 +48,11 @@ func main() {
 	}
 	for _, group := range groups {
 		db.Create(&group)
+	}
+}
+
+func printError(err error) {
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 }

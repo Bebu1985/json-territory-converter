@@ -3,13 +3,12 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 
-	"github.com/Bebu1985/jsonTerritoryConverter"
-
-	"github.com/Bebu1985/jsonTerritoryConverter/group"
+	"github.com/Bebu1985/jsonTerritoryConverter/jsonConvert"
+	"github.com/Bebu1985/jsonTerritoryConverter/models"
+	"github.com/google/uuid"
 )
 
 type groupMapHelper struct {
@@ -20,13 +19,17 @@ type groupMapHelper struct {
 func main() {
 	globalJsonPath := "D:\\Bebu\\Documents\\Versammlung\\Gebiete\\Fieldservice\\ServiceAreaAdministration\\Data\\"
 	//globalJsonPath := "D:\\Bebu\\Documents\\Versammlung\\Gebiete\\Fieldservice\\ServiceAreaAdministration\\Data\\additional"
-	servants, serErr := jsonTerritoryConverter.ReadServantDataFromJson(globalJsonPath + "servants.json")
+
+	CreateGroupFile(globalJsonPath + "additional\\groups.json")
+
+	var servants []models.Servant
+	serErr := jsonConvert.FileToObjects(globalJsonPath+"servants.json", &servants)
 	if serErr != nil {
 		fmt.Println("Error reading servants")
 		os.Exit(-1)
 	}
-
-	groups, groupErr := jsonTerritoryConverter.ReadGroupDataFromJson(globalJsonPath + "additional\\groups.json")
+	var groups []models.Group
+	groupErr := jsonConvert.FileToObjects(globalJsonPath+"additional\\groups.json", &groups)
 	if groupErr != nil {
 		fmt.Println("Error reading groups")
 		os.Exit(-1)
@@ -37,7 +40,7 @@ func main() {
 		groupMap[i] = groupMapHelper{Name: group.Name, ID: group.GUIDID}
 	}
 
-	var groupServantJoins []group.GroupServantJoin
+	var groupServantJoins []models.GroupServantJoin
 	for _, servant := range servants {
 		if servant.IsActivated == 0 {
 			continue
@@ -52,29 +55,22 @@ func main() {
 		var groupKey int
 		fmt.Scanln(&groupKey)
 
-		join := group.GroupServantJoin{ServantID: servant.GuidId, GrouptID: groupMap[groupKey].ID}
+		join := models.GroupServantJoin{ServantID: servant.GUIDID, GroupID: groupMap[groupKey].ID}
 
 		groupServantJoins = append(groupServantJoins, join)
 	}
 
-	jsonData, jsonEncodeErr := group.EncodeGroupServantJoin(groupServantJoins)
-	if jsonEncodeErr != nil {
-		fmt.Println("Error encoding join data")
-		os.Exit(-1)
+	writeErr := jsonConvert.ObjectsToFile(groupServantJoins, globalJsonPath+"additional\\groupJoins.json")
+	if writeErr != nil {
+		fmt.Println("Error writing join file")
 	}
-
-	ioutil.WriteFile(globalJsonPath+"additional\\groupJoins.json", jsonData, 0666)
 }
-
-/*for _, item := range testList {
-	fmt.Println(item)
-}*/
 
 func CreateGroupFile(path string) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		fmt.Print("Bitte Anzahl der Gruppen eingeben: ")
 		var count int
-		var groups []group.Group
+		var groups []models.Group
 		fmt.Scanln(&count)
 		for i := 0; i < count; i++ {
 			var groupName string
@@ -86,18 +82,16 @@ func CreateGroupFile(path string) {
 			readLine(&groupLeader)
 			fmt.Print("Gehilfe: ")
 			readLine(&groupHelper)
+			uuid := uuid.New()
 
-			groups = append(groups, group.Group{Name: groupName, Leader: groupLeader, Helper: groupHelper})
+			groups = append(groups, models.Group{Name: groupName, Leader: groupLeader, Helper: groupHelper, GUIDID: uuid.String()})
 
 		}
-		jsonData, errJSON := group.EncodeGroups(groups)
-		if errJSON != nil {
-			fmt.Println("Daten konnten nicht in json umgewandelt werden")
+		writeErr := jsonConvert.ObjectsToFile(groups, path)
+		if writeErr != nil {
+			fmt.Println("Error while writing group file")
 		}
-		fileErr := ioutil.WriteFile(path, jsonData, 0644)
-		if fileErr != nil {
-			fmt.Println("Datei konnte nicht geschrieben werden")
-		}
+
 	} else {
 		fmt.Println("Datei existiert bereits")
 	}
