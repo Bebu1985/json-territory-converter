@@ -4,6 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+//Servant represents a subset of the data about a single servant
 type Servant struct {
 	gorm.Model
 	KeyID          string `json:"KeyId"`
@@ -15,6 +16,7 @@ type Servant struct {
 	GroupID        string `json:"Group"`
 }
 
+//AreaAction represents a single action that happend on a territory
 type AreaAction struct {
 	gorm.Model
 	ProcessDate string `json:"ProcessDate"`
@@ -27,6 +29,7 @@ type AreaAction struct {
 	Modifiedon  string `json:"Modifiedon"`
 }
 
+//Group is additional data to add servantgroups functionality
 type Group struct {
 	gorm.Model `json:"-"`
 	GUIDID     string `json:"Id"`
@@ -35,11 +38,14 @@ type Group struct {
 	Helper     string `json:"Helper"`
 }
 
+//GroupServantJoin is a helper struct for a 1:1 mapping between servant and group
 type GroupServantJoin struct {
-	GroupID   string `json:"GroupId"`
-	ServantID string `json:"ServantId"`
+	gorm.Model `json:"-"`
+	GroupID    string `json:"GroupId"`
+	ServantID  string `json:"ServantId"`
 }
 
+//Area represents the data of a territory
 type Area struct {
 	gorm.Model
 	GUIDID           string `json:"Id"`

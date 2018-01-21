@@ -10,9 +10,9 @@ import (
 )
 
 func main() {
-	globalJsonPath := "D:\\Bebu\\Documents\\Versammlung\\Gebiete\\Fieldservice\\ServiceAreaAdministration\\Data\\"
+	globalJSONPath := "D:\\Bebu\\Documents\\Versammlung\\Gebiete\\Fieldservice\\ServiceAreaAdministration\\Data\\"
 
-	db, err := jsonTerritoryConverter.CreateDatabase("test.db", false)
+	db, err := jsonTerritoryConverter.CreateDatabase(globalJSONPath+"additional\\territories.db", true)
 	if err != nil {
 		fmt.Println("Database connection failed")
 		os.Exit(-1)
@@ -20,20 +20,24 @@ func main() {
 	defer db.Close()
 
 	var servants []models.Servant
-	servErr := jsonConvert.FileToObjects(globalJsonPath+"servants.json", &servants)
+	servErr := jsonConvert.FileToObjects(globalJSONPath+"servants.json", &servants)
 	printError(servErr)
 
 	var areas []models.Area
-	areaErr := jsonConvert.FileToObjects(globalJsonPath+"areas.json", &areas)
+	areaErr := jsonConvert.FileToObjects(globalJSONPath+"areas.json", &areas)
 	printError(areaErr)
 
 	var areaActions []models.AreaAction
-	areaActErr := jsonConvert.FileToObjects(globalJsonPath+"areaactions.json", &areaActions)
+	areaActErr := jsonConvert.FileToObjects(globalJSONPath+"areaactions.json", &areaActions)
 	printError(areaActErr)
 
 	var groups []models.Group
-	groupErr := jsonConvert.FileToObjects(globalJsonPath+"additional\\groups.json", &groups)
+	groupErr := jsonConvert.FileToObjects(globalJSONPath+"additional\\groups.json", &groups)
 	printError(groupErr)
+
+	var joins []models.GroupServantJoin
+	joinErr := jsonConvert.FileToObjects(globalJSONPath+"additional\\groupJoins.json", &joins)
+	printError(joinErr)
 
 	for _, servant := range servants {
 		db.Create(&servant)
@@ -48,6 +52,9 @@ func main() {
 	}
 	for _, group := range groups {
 		db.Create(&group)
+	}
+	for _, groupJoin := range joins {
+		db.Create(&groupJoin)
 	}
 }
 
