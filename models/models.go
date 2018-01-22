@@ -16,6 +16,14 @@ type Servant struct {
 	GroupID        string `json:"Group"`
 }
 
+//ServantAgg is used for the result of the aggregation of Servant, Group, GroupServantJoin
+type ServantAgg struct {
+	ID       string
+	Prename  string
+	Lastname string
+	Group    string
+}
+
 //AreaAction represents a single action that happend on a territory
 type AreaAction struct {
 	gorm.Model
