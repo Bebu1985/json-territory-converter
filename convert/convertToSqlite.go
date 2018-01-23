@@ -1,7 +1,6 @@
-package jsonTerritoryConverter
+package convert
 
 import (
-	"github.com/Bebu1985/jsonTerritoryConverter/models"
 	"github.com/jinzhu/gorm"
 	//Blank import is needed to support sqlite in gorm
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -16,13 +15,13 @@ func CreateDatabase(Path string, Log bool) (*gorm.DB, error) {
 	}
 
 	db.LogMode(Log)
-	db.AutoMigrate(&models.Servant{}, &models.AreaAction{}, &models.Area{}, &models.Group{}, &models.GroupServantJoin{})
+	db.AutoMigrate(&Servant{}, &AreaAction{}, &Area{}, &ServiceGroup{}, &GroupServantJoin{})
 
-	createOrCleanFor(db, &models.Servant{})
-	createOrCleanFor(db, &models.Area{})
-	createOrCleanFor(db, &models.AreaAction{})
-	createOrCleanFor(db, &models.Group{})
-	createOrCleanFor(db, &models.GroupServantJoin{})
+	createOrCleanFor(db, &Servant{})
+	createOrCleanFor(db, &Area{})
+	createOrCleanFor(db, &AreaAction{})
+	createOrCleanFor(db, &ServiceGroup{})
+	createOrCleanFor(db, &GroupServantJoin{})
 
 	return db, nil
 }

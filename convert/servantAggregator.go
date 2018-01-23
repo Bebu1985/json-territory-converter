@@ -1,29 +1,14 @@
-package agg
+package convert
 
 import (
 	"fmt"
 	"log"
 
-	"github.com/Bebu1985/jsonTerritoryConverter/jsonConvert"
-	"github.com/Bebu1985/jsonTerritoryConverter/models"
 	. "github.com/ahmetb/go-linq"
 )
 
-type servantData struct {
-	servants []models.Servant
-	groups   []models.Group
-	joins    []models.GroupServantJoin
-}
-
-//FilePaths allows to handle different locations of the data files for all necessary data to aggregate a Servant
-type FilePaths struct {
-	ServantFile string
-	GroupFile   string
-	JoinFile    string
-}
-
 //GetServantAggs loads all data from the given files an returns aggregates of all active Servants
-func GetServantAggs(paths FilePaths) []models.ServantAgg {
+func GetServantAggs(paths FilePaths) []ServantAgg {
 	fileData := loadServantData(paths)
 	removeInactive(fileData.servants)
 
@@ -31,36 +16,36 @@ func GetServantAggs(paths FilePaths) []models.ServantAgg {
 }
 
 func loadServantData(path FilePaths) servantData {
-	var servants []models.Servant
+	var servants []Servant
 	loadOrCrash(path.ServantFile, &servants)
 
-	var groups []models.Group
+	var groups []ServiceGroup
 	loadOrCrash(path.GroupFile, &groups)
 
-	var joins []models.GroupServantJoin
+	var joins []GroupServantJoin
 	loadOrCrash(path.JoinFile, &joins)
 
 	return servantData{servants, groups, joins}
 }
 
 func loadOrCrash(path string, out interface{}) {
-	err := jsonConvert.FileToObjects(path, out)
+	err := FileToObjects(path, out)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 }
 
-func removeInactive(servants []models.Servant) []models.Servant {
-	var activeServants []models.Servant
-	From(servants).WhereT(func(s models.Servant) bool {
+func removeInactive(servants []Servant) []Servant {
+	var activeServants []Servant
+	From(servants).WhereT(func(s Servant) bool {
 		return s.IsActivated == 1
 	}).ToSlice(&activeServants)
 
 	return activeServants
 }
 
-func aggregateFileData(data servantData) []models.ServantAgg {
-	var servantAggs []models.ServantAgg
+func aggregateFileData(data servantData) []ServantAgg {
+	var servantAggs []ServantAgg
 	for _, servant := range data.servants {
 
 		foundJoin, OK := findJoinEntry(servant, data.joins)
@@ -74,7 +59,7 @@ func aggregateFileData(data servantData) []models.ServantAgg {
 			fmt.Printf("No group found for %s %s\n", servant.Prename, servant.Lastname)
 		}
 
-		aggServant := models.ServantAgg{
+		aggServant := ServantAgg{
 			ID:       servant.GUIDID,
 			Prename:  servant.Prename,
 			Lastname: servant.Lastname,
@@ -85,18 +70,18 @@ func aggregateFileData(data servantData) []models.ServantAgg {
 	return servantAggs
 }
 
-func findJoinEntry(servant models.Servant, joins []models.GroupServantJoin) (foundJoin models.GroupServantJoin, OK bool) {
-	foundJoin, OK = From(joins).FirstWithT(func(j models.GroupServantJoin) bool {
+func findJoinEntry(servant Servant, joins []GroupServantJoin) (foundJoin GroupServantJoin, OK bool) {
+	foundJoin, OK = From(joins).FirstWithT(func(j GroupServantJoin) bool {
 		return servant.GUIDID == j.ServantID
-	}).(models.GroupServantJoin)
+	}).(GroupServantJoin)
 
 	return foundJoin, OK
 }
 
-func findGroup(join models.GroupServantJoin, groups []models.Group) (foundGroup models.Group, OK bool) {
-	foundGroup, OK = From(groups).FirstWithT(func(g models.Group) bool {
+func findGroup(join GroupServantJoin, groups []ServiceGroup) (foundGroup ServiceGroup, OK bool) {
+	foundGroup, OK = From(groups).FirstWithT(func(g ServiceGroup) bool {
 		return join.GroupID == g.GUIDID
-	}).(models.Group)
+	}).(ServiceGroup)
 
 	return foundGroup, OK
 }

@@ -1,4 +1,4 @@
-package models
+package convert
 
 import (
 	"github.com/jinzhu/gorm"
@@ -37,8 +37,8 @@ type AreaAction struct {
 	Modifiedon  string `json:"Modifiedon"`
 }
 
-//Group is additional data to add servantgroups functionality
-type Group struct {
+//ServiceGroup is additional data to add servantgroups functionality
+type ServiceGroup struct {
 	gorm.Model `json:"-"`
 	GUIDID     string `json:"Id"`
 	Name       string `json:"Name"`
@@ -65,4 +65,17 @@ type Area struct {
 	QuantityFamilies string `json:"QuantityFamilies"`
 	Description      string `json:"Description"`
 	Streets          string `json:"Streets"`
+}
+
+type servantData struct {
+	servants []Servant
+	groups   []ServiceGroup
+	joins    []GroupServantJoin
+}
+
+//FilePaths allows to handle different locations of the data files for all necessary data to aggregate a Servant
+type FilePaths struct {
+	ServantFile string
+	GroupFile   string
+	JoinFile    string
 }
