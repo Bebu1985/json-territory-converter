@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 )
 
+//FileToObjects reads a json file and gives us back those objects
 func FileToObjects(Path string, objects interface{}) error {
 	JSON, readErr := ioutil.ReadFile(Path)
 	if readErr != nil {
@@ -18,6 +19,7 @@ func FileToObjects(Path string, objects interface{}) error {
 	return nil
 }
 
+//ObjectsToFile takes a slice of objects and writes them to the specified file
 func ObjectsToFile(objects interface{}, Path string) error {
 	JSON, marsErr := json.Marshal(objects)
 	if marsErr != nil {
