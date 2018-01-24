@@ -39,6 +39,7 @@ type AreaAction struct {
 	Modifiedon  string `json:"Modifiedon"`
 }
 
+//AreaActionAgg represents a shrinked version of AreaAction
 type AreaActionAgg struct {
 	ProcessDate time.Time
 	Action      int
@@ -77,6 +78,7 @@ type Area struct {
 	Streets          string `json:"Streets"`
 }
 
+//AreaAgg represents the shrinked Data from a Area
 type AreaAgg struct {
 	ID          string
 	AreaNumber  string
