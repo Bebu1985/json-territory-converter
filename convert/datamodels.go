@@ -39,13 +39,13 @@ type AreaAction struct {
 	Modifiedon  string `json:"Modifiedon"`
 }
 
-//AreaActionAgg represents a shrinked version of AreaAction
+//AreaActionAgg represents a shrinked version of AreaAction, with embedded Area and Servant
 type AreaActionAgg struct {
 	ProcessDate time.Time
 	Action      int
-	Area        AreaAgg
 	ID          string
-	Servant     ServantAgg
+	ServantID   string
+	AreaID      string
 }
 
 //ServiceGroup is additional data to add servantgroups functionality
@@ -94,7 +94,9 @@ type servantData struct {
 
 //FilePaths allows to handle different locations of the data files for all necessary data to aggregate a Servant
 type FilePaths struct {
-	ServantFile string
-	GroupFile   string
-	JoinFile    string
+	ServantFile    string
+	GroupFile      string
+	JoinFile       string
+	AreaFile       string
+	AreaActionFile string
 }

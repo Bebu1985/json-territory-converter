@@ -1,8 +1,9 @@
 package convert
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/go-test/deep"
 )
 
 const (
@@ -23,8 +24,8 @@ func TestFlatAreas(t *testing.T) {
 
 	actual := flatAreas(areas)
 
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("Flating areas failed")
+	if diff := deep.Equal(expected, actual); diff != nil {
+		t.Error(diff)
 	}
 
 }

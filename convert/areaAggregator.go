@@ -1,9 +1,9 @@
 package convert
 
 //GetAreaAggs marshalls from the given jsonfile to objects, flat them down and return them
-func GetAreaAggs(path string) []AreaAgg {
+func GetAreaAggs(paths FilePaths) []AreaAgg {
 	var rawAreas []Area
-	FileToObjects(path, &rawAreas)
+	FileToObjects(paths.AreaFile, &rawAreas)
 
 	return flatAreas(rawAreas)
 }
