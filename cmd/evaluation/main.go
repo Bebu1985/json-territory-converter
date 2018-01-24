@@ -15,9 +15,15 @@ func main() {
 		GroupFile:   globalJSONPath + "additional\\groups.json",
 		JoinFile:    globalJSONPath + "additional\\groupJoins.json"}
 
-	aggs := convert.GetServantAggs(paths)
+	servants := convert.GetServantAggs(paths)
 
-	for _, agg := range aggs {
-		fmt.Println(agg)
+	areas := convert.GetAreaAggs(globalJSONPath + "areas.json")
+
+	for _, servant := range servants {
+		fmt.Printf("Servant: %v\n", servant)
+	}
+
+	for _, area := range areas {
+		fmt.Printf("Area: %v\n", area)
 	}
 }

@@ -1,6 +1,8 @@
 package convert
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -37,6 +39,14 @@ type AreaAction struct {
 	Modifiedon  string `json:"Modifiedon"`
 }
 
+type AreaActionAgg struct {
+	ProcessDate time.Time
+	Action      int
+	Area        AreaAgg
+	ID          string
+	Servant     ServantAgg
+}
+
 //ServiceGroup is additional data to add servantgroups functionality
 type ServiceGroup struct {
 	gorm.Model `json:"-"`
@@ -65,6 +75,13 @@ type Area struct {
 	QuantityFamilies string `json:"QuantityFamilies"`
 	Description      string `json:"Description"`
 	Streets          string `json:"Streets"`
+}
+
+type AreaAgg struct {
+	ID          string
+	AreaNumber  string
+	Name        string
+	Description string
 }
 
 type servantData struct {
