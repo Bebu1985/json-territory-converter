@@ -4,7 +4,7 @@ go:
   - 1.9.x
   - tip
 
-go_import_path: github.com/Bebu1985/jsonTerritoryConverter/convert
+go_import_path: github.com/Bebu1985/jsonTerritoryConverter
 
 before_install:
   - go get -t ./...
