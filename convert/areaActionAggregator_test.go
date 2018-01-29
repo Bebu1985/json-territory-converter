@@ -1,7 +1,6 @@
 package convert
 
 import (
-	"log"
 	"testing"
 	"time"
 
@@ -19,7 +18,7 @@ const (
 	AnotherAction = 3
 
 	Date1 = "2014-07-29T00:00:00"
-	Date2 = "2015-11-01T00:02:00"
+	Date2 = "2015-11-01T00:02:00+02:00"
 )
 
 func TestFlatAreaActions(t *testing.T) {
@@ -80,7 +79,7 @@ func mockAreaActionList() []AreaAction {
 
 func mockExpectedAreaActionAggsList() []AreaActionAgg {
 	agg := AreaActionAgg{
-		ProcessDate: getDate(2014, 07, 29, 00, 00, 00),
+		ProcessDate: getDate(2014, 07, 29, 00, 00, 00, 0),
 		Action:      Action,
 		ID:          ID,
 		ServantID:   ServantID,
@@ -88,7 +87,7 @@ func mockExpectedAreaActionAggsList() []AreaActionAgg {
 	}
 
 	agg2 := AreaActionAgg{
-		ProcessDate: getDate(2015, 11, 01, 00, 02, 00),
+		ProcessDate: getDate(2015, 11, 01, 00, 02, 00, 60*60*2),
 		Action:      AnotherAction,
 		ID:          OtherID,
 		ServantID:   OtherServantID,
@@ -99,11 +98,8 @@ func mockExpectedAreaActionAggsList() []AreaActionAgg {
 	return append(result, agg, agg2)
 }
 
-func getDate(year int, month time.Month, day, hour, minute, second int) time.Time {
-	loc, err := time.LoadLocation("UTC")
-	if err != nil {
-		log.Fatal("could not load location")
-	}
+func getDate(year int, month time.Month, day, hour, minute, second, zone int) time.Time {
+	loc := time.FixedZone("+0200", zone)
 
 	return time.Date(year, month, day, hour, minute, second, 0, loc)
 }

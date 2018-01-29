@@ -19,8 +19,12 @@ func flatAreaActions(areaActions []AreaAction) []AreaActionAgg {
 
 		processDate, err := time.Parse("2006-01-02T15:04:05", a.ProcessDate)
 		if err != nil {
-			fmt.Printf("Could not parse process date %s with error %s\n", a.ProcessDate, err.Error())
-			continue
+			processDate, err = time.Parse("2006-01-02T15:04:05-07:00", a.ProcessDate)
+			if err != nil {
+				fmt.Printf("Could not parse process date %s with error %s\n", a.ProcessDate, err.Error())
+				continue
+			}
+
 		}
 
 		agg := AreaActionAgg{
