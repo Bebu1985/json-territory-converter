@@ -6,6 +6,12 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+const (
+	HandedOut = 1
+	Worked    = 3
+	GivenBack = 6
+)
+
 //Servant represents a subset of the data about a single servant
 type Servant struct {
 	gorm.Model
