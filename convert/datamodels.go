@@ -54,6 +54,14 @@ type AreaActionAgg struct {
 	AreaID      string
 }
 
+type AreaGroup struct {
+	Area         AreaAgg
+	Actions      []AreaActionAgg
+	CurrentState int
+	GivenOut     time.Time
+	LastWorked   time.Time
+}
+
 //ServiceGroup is additional data to add servantgroups functionality
 type ServiceGroup struct {
 	gorm.Model `json:"-"`
