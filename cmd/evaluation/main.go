@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Bebu1985/jsonTerritoryConverter/convert"
 )
@@ -17,20 +18,21 @@ func main() {
 		AreaFile:       globalJSONPath + "areas.json",
 		AreaActionFile: globalJSONPath + "areaactions.json"}
 
-	//servants := convert.GetServantAggs(paths)
+	servants := convert.GetServantAggs(paths)
 	areas := convert.GetAreaAggs(paths)
-	//areaActions := convert.GetAreaActionAggs(paths)
+	areaActions := convert.GetAreaActionAggs(paths)
 
-	/* for _, servant := range servants {
-		fmt.Printf("Servant: %v\n", servant)
-	} */
+	areaStatus := convert.JoinAll(areas, areaActions, servants)
 
-	for _, area := range areas {
-		fmt.Printf("Area: %v\n", area)
-
+	for _, area := range areaStatus {
+		fmt.Printf("Nr:%s-Name:%s-Out:%v-Given Out:%v-LastWorked:%v-Worked by:%s-Group:%s\n",
+			area.Area.AreaNumber,
+			area.Area.Name,
+			area.CurrentlyOut,
+			area.GivenOut.UTC().Format(time.UnixDate),
+			area.LastWorked,
+			area.WorkedFromID,
+			area.Group)
 	}
 
-	/* for _, areaAction := range areaActions {
-		fmt.Printf("AreaAction: %v\n", areaAction)
-	} */
 }

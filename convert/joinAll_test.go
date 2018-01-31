@@ -7,13 +7,66 @@ import (
 	"github.com/go-test/deep"
 )
 
+func TestGetStateOfAllAreas(t *testing.T) {
+
+}
+
+func TestIsGivenOutYes(t *testing.T) {
+	ag := AreaGroup{
+		Actions: []AreaActionAgg{
+			mockAreaActionAgg(2017, 12, 8, Worked),
+			mockAreaActionAgg(2017, 1, 1, HandedOut),
+			mockAreaActionAgg(2015, 12, 8, GivenBack),
+			mockAreaActionAgg(2014, 5, 6, Worked),
+			mockAreaActionAgg(2014, 1, 2, HandedOut),
+		},
+	}
+	if isGivenOut(ag) != true {
+		t.Errorf("error: expected territory to given out, but found not given out")
+	}
+}
+
+func TestIsGivenOutNoActionsNo(t *testing.T) {
+	ag := AreaGroup{
+		Actions: []AreaActionAgg{},
+	}
+	if isGivenOut(ag) != false {
+		t.Errorf("error: expected not territory action to answer no")
+	}
+}
+
+const Donald = "Donald"
+const Daisy = "Daisy"
+
+func TestUpdateLastWorked(t *testing.T) {
+	ag := AreaGroup{
+		Actions: []AreaActionAgg{
+			mockAreaActionAggWithServant(2017, 12, 8, Worked, Donald),
+			mockAreaActionAggWithServant(2017, 1, 1, HandedOut, Donald),
+			mockAreaActionAggWithServant(2015, 12, 8, GivenBack, Donald),
+			mockAreaActionAggWithServant(2014, 5, 6, Worked, Daisy),
+			mockAreaActionAggWithServant(2014, 1, 2, HandedOut, Daisy),
+		},
+	}
+	updateLastWorked(&ag)
+	expectedDate := createDate(2017, 12, 8)
+	diff := expectedDate.Sub(ag.LastWorked)
+	if diff != 0 {
+		t.Errorf("error at updateLastWorked: expected %v, got %v with %v difference", expectedDate, ag.LastWorked, diff)
+	}
+	if ag.WorkedFromID != Donald {
+		t.Errorf("error at updateLastWorked: expected worker id %s, got %s", Donald, ag.WorkedFromID)
+	}
+}
+
 func TestUpdateHandedOut(t *testing.T) {
 	ag := AreaGroup{
 		Actions: []AreaActionAgg{
-			mockAreaActionAgg(2017, 12, 8, GivenBack),
-			mockAreaActionAgg(2017, 12, 8, Worked),
-			mockAreaActionAgg(2017, 12, 2, HandedOut),
-			mockAreaActionAgg(2017, 12, 1, GivenBack),
+			mockAreaActionAggWithServant(2017, 12, 8, GivenBack, Donald),
+			mockAreaActionAggWithServant(2017, 12, 8, Worked, Donald),
+			mockAreaActionAggWithServant(2017, 12, 2, HandedOut, Donald),
+			mockAreaActionAggWithServant(2017, 12, 1, GivenBack, Daisy),
+			mockAreaActionAggWithServant(2014, 2, 2, HandedOut, Daisy),
 		},
 	}
 	updateGivenOut(&ag)
@@ -22,6 +75,9 @@ func TestUpdateHandedOut(t *testing.T) {
 	diff := expectedDate.Sub(ag.GivenOut)
 	if diff != 0 {
 		t.Errorf("error at updateGivenOut: expected %v, got %v with %v difference", expectedDate, ag.GivenOut, diff)
+	}
+	if ag.GivenToID != Donald {
+		t.Errorf("error at updateLastWorked: expected worker id %s, got %s", Donald, ag.WorkedFromID)
 	}
 }
 
@@ -89,7 +145,11 @@ func TestAreaActionsOrderedByDateAndThenByState(t *testing.T) {
 }
 
 func mockAreaActionAgg(year int, month time.Month, day, action int) AreaActionAgg {
-	return AreaActionAgg{ProcessDate: createDate(year, month, day), Action: action}
+	return mockAreaActionAggWithServant(year, month, day, action, "")
+}
+
+func mockAreaActionAggWithServant(year int, month time.Month, day, action int, servantID string) AreaActionAgg {
+	return AreaActionAgg{ProcessDate: createDate(year, month, day), Action: action, ServantID: servantID}
 }
 
 func createDate(year int, month time.Month, day int) time.Time {

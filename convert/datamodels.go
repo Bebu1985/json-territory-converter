@@ -59,7 +59,11 @@ type AreaGroup struct {
 	Actions      []AreaActionAgg
 	CurrentState int
 	GivenOut     time.Time
+	GivenToID    string
 	LastWorked   time.Time
+	WorkedFromID string
+	CurrentlyOut bool
+	Group        string
 }
 
 //ServiceGroup is additional data to add servantgroups functionality
