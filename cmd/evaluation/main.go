@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/tealeg/xlsx"
+
 	"github.com/Bebu1985/jsonTerritoryConverter/convert"
 )
 
@@ -24,15 +26,69 @@ func main() {
 
 	areaStatus := convert.JoinAll(areas, areaActions, servants)
 
+	file := xlsx.NewFile()
+	sheet, err := file.AddSheet("Übersicht")
+
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	SetHeader(sheet)
+
 	for _, area := range areaStatus {
-		fmt.Printf("Nr:%s-Name:%s-Out:%v-Given Out:%v-LastWorked:%v-Worked by:%s-Group:%s\n",
-			area.Area.AreaNumber,
-			area.Area.Name,
-			area.CurrentlyOut,
-			area.GivenOut.UTC().Format(time.UnixDate),
-			area.LastWorked,
-			area.WorkedFromID,
-			area.Group)
+		row := sheet.AddRow()
+		AddStringCell(row, area.Area.AreaNumber)
+		AddStringCell(row, area.Area.Name)
+		AddGivenOut(row, area.CurrentlyOut)
+		AddDate(row, area.GivenOut)
+		AddDate(row, area.LastWorked)
+		AddStringCell(row, area.WorkedFromID)
+		AddStringCell(row, area.Group)
+	}
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	for _, col := range sheet.Cols {
+		col.Width = 20.0
 	}
 
+	err = file.Save("MyXLSXFile.xlsx")
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+}
+
+func SetHeader(sheet *xlsx.Sheet) {
+	row := sheet.AddRow()
+	AddStringCell(row, "Gebietsnummer")
+	AddStringCell(row, "Gebietsname")
+	AddStringCell(row, "Ausgegeben")
+	AddStringCell(row, "Ausgegeben am")
+	AddStringCell(row, "Zuletzt eingetragen")
+	AddStringCell(row, "Verkündiger")
+	AddStringCell(row, "Gruppe")
+}
+
+func AddStringCell(row *xlsx.Row, value string) {
+	cell := row.AddCell()
+	cell.SetString(value)
+}
+
+func AddIntCell(row *xlsx.Row, value int) {
+	cell := row.AddCell()
+	cell.SetInt(value)
+}
+
+func AddGivenOut(row *xlsx.Row, value bool) {
+	cell := row.AddCell()
+	if value == true {
+		cell.SetString("Ausgegeben")
+		return
+	}
+
+	cell.SetString("Nicht ausgegeben")
+}
+
+func AddDate(row *xlsx.Row, value time.Time) {
+	cell := row.AddCell()
+	cell.SetDate(value)
 }

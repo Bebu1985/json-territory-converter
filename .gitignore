@@ -3,3 +3,5 @@ debug
 *.db
 *.sqlite
 coverage
+*.xlsx
+*xlsx*
