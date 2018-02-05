@@ -43,6 +43,7 @@ type AreaAction struct {
 	GUIDID      string `json:"Id"`
 	Createdon   string `json:"Createdon"`
 	Modifiedon  string `json:"Modifiedon"`
+	IsDeleted   int    `json:"Isdeleted"`
 }
 
 //AreaActionAgg represents a shrinked version of AreaAction, with embedded Area and Servant
@@ -60,6 +61,7 @@ type AreaGroup struct {
 	CurrentState int
 	GivenOut     time.Time
 	GivenToID    string
+	GivenToName  string
 	LastWorked   time.Time
 	WorkedFromID string
 	CurrentlyOut bool
@@ -94,6 +96,7 @@ type Area struct {
 	QuantityFamilies string `json:"QuantityFamilies"`
 	Description      string `json:"Description"`
 	Streets          string `json:"Streets"`
+	IsDeleted        int    `json:"Isdeleted"`
 }
 
 //AreaAgg represents the shrinked Data from a Area

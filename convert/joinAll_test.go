@@ -114,7 +114,7 @@ func TestGetStateOfAllAreas(t *testing.T) {
 		t.Errorf("error expected 'Group2', got %s", ag.Group)
 	}
 
-	if ag.WorkedFromID != "Duck, Daisy" {
+	if ag.GivenToName != "Duck, Daisy" {
 		t.Errorf("error expected 'Duck, Daisy', got %s", ag.WorkedFromID)
 	}
 

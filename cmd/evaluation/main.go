@@ -36,13 +36,11 @@ func main() {
 
 	for _, area := range areaStatus {
 		row := sheet.AddRow()
-		AddStringCell(row, area.Area.AreaNumber)
-		AddStringCell(row, area.Area.Name)
-		AddGivenOut(row, area.CurrentlyOut)
-		AddDate(row, area.GivenOut)
-		AddDate(row, area.LastWorked)
-		AddStringCell(row, area.WorkedFromID)
-		AddStringCell(row, area.Group)
+		if area.CurrentlyOut == true {
+			writeGivenOut(area, row)
+		} else {
+			writeNotGivenOut(area, row)
+		}
 	}
 	if err != nil {
 		fmt.Printf(err.Error())
@@ -55,6 +53,32 @@ func main() {
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
+}
+
+func writeGivenOut(ag convert.AreaGroup, row *xlsx.Row) {
+	AddStringCell(row, ag.Area.AreaNumber)
+	AddStringCell(row, ag.Area.Name)
+	AddGivenOut(row, ag.CurrentlyOut)
+	if ag.GivenOut.Sub(ag.LastWorked) >= 0 {
+		AddDate(row, ag.GivenOut)
+		AddDate(row, ag.GivenOut)
+	} else {
+		AddDate(row, ag.GivenOut)
+		AddDate(row, ag.LastWorked)
+	}
+
+	AddStringCell(row, ag.GivenToName)
+	AddStringCell(row, ag.Group)
+}
+
+func writeNotGivenOut(ag convert.AreaGroup, row *xlsx.Row) {
+	AddStringCell(row, ag.Area.AreaNumber)
+	AddStringCell(row, ag.Area.Name)
+	AddGivenOut(row, ag.CurrentlyOut)
+	AddEmpty(row)
+	AddDate(row, ag.LastWorked)
+	AddEmpty(row)
+	AddEmpty(row)
 }
 
 func SetHeader(sheet *xlsx.Sheet) {
@@ -90,5 +114,16 @@ func AddGivenOut(row *xlsx.Row, value bool) {
 
 func AddDate(row *xlsx.Row, value time.Time) {
 	cell := row.AddCell()
-	cell.SetDate(value)
+	defaultTime := time.Time{}
+	if value != defaultTime {
+		cell.SetDate(value)
+	} else {
+		cell.SetString("")
+	}
+
+}
+
+func AddEmpty(row *xlsx.Row) {
+	cell := row.AddCell()
+	cell.SetString("")
 }

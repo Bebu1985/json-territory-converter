@@ -17,6 +17,10 @@ func flatAreaActions(areaActions []AreaAction) []AreaActionAgg {
 
 	for _, a := range areaActions {
 
+		if a.IsDeleted == 1 {
+			continue
+		}
+
 		processDate, err := time.Parse("2006-01-02T15:04:05", a.ProcessDate)
 		if err != nil {
 			processDate, err = time.Parse("2006-01-02T15:04:05-07:00", a.ProcessDate)

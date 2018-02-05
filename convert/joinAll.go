@@ -24,14 +24,14 @@ func JoinAll(a []AreaAgg, aa []AreaActionAgg, s []ServantAgg) []AreaGroup {
 func insertServantName(ag *AreaGroup, ss []ServantAgg) {
 	var name, group string
 	for _, s := range ss {
-		if s.ID == ag.WorkedFromID {
+		if s.ID == ag.GivenToID {
 			name = s.Lastname + ", " + s.Prename
 			group = s.Group
 			break
 		}
 	}
 
-	ag.WorkedFromID = name
+	ag.GivenToName = name
 	ag.Group = group
 }
 
@@ -76,9 +76,9 @@ func updateLastWorked(ag *AreaGroup) {
 }
 func findFirstActionDateWithState(ag AreaGroup, state int) (time.Time, string) {
 	actions := ag.Actions
-	for i := range actions {
-		if actions[i].Action == state {
-			return actions[i].ProcessDate, actions[i].ServantID
+	for _, action := range actions {
+		if action.Action == state {
+			return action.ProcessDate, action.ServantID
 		}
 	}
 

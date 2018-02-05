@@ -12,6 +12,11 @@ func flatAreas(areas []Area) []AreaAgg {
 	var results []AreaAgg
 
 	for _, a := range areas {
+
+		if a.IsDeleted == 1 {
+			continue
+		}
+
 		agg := AreaAgg{
 			ID:          a.GUIDID,
 			AreaNumber:  a.AreaNumber,
