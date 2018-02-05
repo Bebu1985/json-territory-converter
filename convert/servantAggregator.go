@@ -10,7 +10,6 @@ import (
 //GetServantAggs loads all data from the given files an returns aggregates of all active Servants
 func GetServantAggs(paths FilePaths) []ServantAgg {
 	fileData := loadServantData(paths)
-	removeInactive(fileData.servants)
 
 	return aggregateFileData(fileData)
 }
@@ -35,23 +34,13 @@ func loadOrCrash(path string, out interface{}) {
 	}
 }
 
-func removeInactive(servants []Servant) []Servant {
-	var activeServants []Servant
-	From(servants).WhereT(func(s Servant) bool {
-		return s.IsActivated == 1
-	}).ToSlice(&activeServants)
-
-	return activeServants
-}
-
 func aggregateFileData(data servantData) []ServantAgg {
 	var servantAggs []ServantAgg
 	for _, servant := range data.servants {
 
 		foundJoin, OK := findJoinEntry(servant, data.joins)
 		if !OK {
-			fmt.Printf("No join found for %s %s, jump over\n", servant.Prename, servant.Lastname)
-			continue
+			fmt.Printf("No join found for %s %s\n", servant.Prename, servant.Lastname)
 		}
 
 		assignedGroup, OK2 := findGroup(foundJoin, data.groups)
@@ -64,6 +53,10 @@ func aggregateFileData(data servantData) []ServantAgg {
 			Prename:  servant.Prename,
 			Lastname: servant.Lastname,
 			Group:    assignedGroup.Name}
+
+		if aggServant.Group == "" {
+			aggServant.Group = "Keine"
+		}
 
 		servantAggs = append(servantAggs, aggServant)
 	}
