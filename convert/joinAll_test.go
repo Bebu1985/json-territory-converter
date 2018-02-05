@@ -8,6 +8,115 @@ import (
 )
 
 func TestGetStateOfAllAreas(t *testing.T) {
+	areas := []AreaAgg{
+		AreaAgg{
+			AreaNumber:  "102",
+			Name:        "AreaName",
+			ID:          "area102",
+			Description: "Description",
+		}}
+	actions := []AreaActionAgg{
+		AreaActionAgg{
+			ProcessDate: createDate(2014, 07, 29),
+			Action:      HandedOut,
+			ID:          "action1",
+			ServantID:   "Servant1",
+			AreaID:      "area102",
+		},
+		AreaActionAgg{
+			ProcessDate: createDate(2015, 12, 4),
+			Action:      Worked,
+			ID:          "action2",
+			ServantID:   "Servant1",
+			AreaID:      "area102",
+		},
+		AreaActionAgg{
+			ProcessDate: createDate(2016, 03, 25),
+			Action:      Worked,
+			ID:          "action3",
+			ServantID:   "Servant1",
+			AreaID:      "area102",
+		},
+		AreaActionAgg{
+			ProcessDate: createDate(2016, 3, 25),
+			Action:      GivenBack,
+			ID:          "action4",
+			ServantID:   "Servant1",
+			AreaID:      "area102",
+		},
+		AreaActionAgg{
+			ProcessDate: createDate(2016, 06, 17),
+			Action:      HandedOut,
+			ID:          "action5",
+			ServantID:   "Servant2",
+			AreaID:      "area102",
+		},
+		AreaActionAgg{
+			ProcessDate: createDate(2016, 7, 16),
+			Action:      Worked,
+			ID:          "action6",
+			ServantID:   "Servant2",
+			AreaID:      "area102",
+		},
+		AreaActionAgg{
+			ProcessDate: createDate(2017, 8, 1),
+			Action:      Worked,
+			ID:          "action7",
+			ServantID:   "Servant2",
+			AreaID:      "area102",
+		},
+	}
+	servants := []ServantAgg{
+		ServantAgg{
+			ID:       "Servant1",
+			Prename:  Donald,
+			Lastname: "Duck",
+			Group:    "Group1",
+		},
+		ServantAgg{
+			ID:       "Servant2",
+			Prename:  Daisy,
+			Lastname: "Duck",
+			Group:    "Group2",
+		},
+	}
+
+	actual := JoinAll(areas, actions, servants)
+	if len(actual) != 1 {
+		t.Errorf("error: expect only one item")
+	}
+
+	ag := actual[0]
+	if ag.CurrentState != Worked {
+		t.Errorf("expected area current state %d, got %d", Worked, ag.CurrentState)
+	}
+
+	givenOutDate := createDate(2016, 6, 17)
+	diff := givenOutDate.Sub(ag.GivenOut)
+	if diff != 0 {
+		t.Errorf("error at given out date: expected %v, got %v with %v difference", givenOutDate, ag.GivenOut, diff)
+	}
+
+	if ag.GivenToID != "Servant2" {
+		t.Errorf("error expected 'Servant2', got %s", ag.GivenToID)
+	}
+
+	lastWorkedDate := createDate(2017, 8, 1)
+	diff = lastWorkedDate.Sub(ag.LastWorked)
+	if diff != 0 {
+		t.Errorf("error at last worked date: expected %v, got %v with %v difference", lastWorkedDate, ag.LastWorked, diff)
+	}
+	if ag.CurrentlyOut != true {
+		t.Error("expected area as given out")
+	}
+
+	if ag.Group != "Group2" {
+		t.Errorf("error expected 'Group2', got %s", ag.Group)
+	}
+
+	if ag.WorkedFromID != "Duck, Daisy" {
+		t.Errorf("error expected 'Duck, Daisy', got %s", ag.WorkedFromID)
+	}
 
 }
 
