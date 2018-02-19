@@ -9,7 +9,7 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
-func ActualExcel(path string, data []convert.AreaGroup) {
+func Excel(path string, data []convert.AreaGroup) {
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Übersicht")
 

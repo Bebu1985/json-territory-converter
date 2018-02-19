@@ -6,6 +6,14 @@ import (
 	. "github.com/ahmetb/go-linq"
 )
 
+func GetCurrentAreaState(paths FilePaths) []AreaGroup {
+	servants := GetServantAggs(paths)
+	areas := GetAreaAggs(paths)
+	areaActions := GetAreaActionAggs(paths)
+
+	return JoinAll(areas, areaActions, servants)
+}
+
 func JoinAll(a []AreaAgg, aa []AreaActionAgg, s []ServantAgg) []AreaGroup {
 	var r []AreaGroup
 	for _, area := range a {

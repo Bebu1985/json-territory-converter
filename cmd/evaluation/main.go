@@ -9,18 +9,18 @@ var globalJSONPath = "D:\\Bebu\\Documents\\Versammlung\\Gebiete\\Fieldservice\\S
 
 func main() {
 
-	paths := convert.FilePaths{
-		ServantFile:    globalJSONPath + "servants.json",
-		GroupFile:      globalJSONPath + "additional\\groups.json",
-		JoinFile:       globalJSONPath + "additional\\groupJoins.json",
-		AreaFile:       globalJSONPath + "areas.json",
-		AreaActionFile: globalJSONPath + "areaactions.json"}
+	paths := buildSubPaths(globalJSONPath)
 
-	servants := convert.GetServantAggs(paths)
-	areas := convert.GetAreaAggs(paths)
-	areaActions := convert.GetAreaActionAggs(paths)
+	areaStatus := convert.GetCurrentAreaState(paths)
 
-	areaStatus := convert.JoinAll(areas, areaActions, servants)
+	report.Excel("ExportFile.xlsx", areaStatus)
+}
 
-	report.ActualExcel("ExportFile.xlsx", areaStatus)
+func buildSubPaths(path string) convert.FilePaths {
+	return convert.FilePaths{
+		ServantFile:    path + "servants.json",
+		GroupFile:      path + "additional\\groups.json",
+		JoinFile:       path + "additional\\groupJoins.json",
+		AreaFile:       path + "areas.json",
+		AreaActionFile: path + "areaactions.json"}
 }
